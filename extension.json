@@ -1,0 +1,25 @@
+{
+  "id": "lang-loader",
+  "name": "Language Loader",
+  "version": "1.0.0",
+  "description": {
+    "zh": "ext-v2x 示例：从扩展的 lang 目录读取 .lang 语言文件，启动自动加载；选择窗口可切换语言并覆盖界面文字/字体；格式错误显示为损坏的文件。",
+    "ja": "ext-v2x のサンプル：拡張機能の lang ディレクトリから .lang 言語ファイルを読み込み、起動時に自動適用。選択ウィンドウで言語を切り替え、UI テキスト/フォントを上書きできます。形式が違うファイルは破損ファイルとして表示されます。",
+    "en": "ext-v2x sample: reads .lang files from the extension's lang directory and auto-loads one at startup. The picker switches languages and overrides UI text/font; malformed files are shown as corrupted."
+  },
+  "entry": "index.js",
+  "author": "iRix QA",
+  "license": "MIT",
+  "minAppVersion": "1.0.2-ext-v2x",
+  "startup": true,
+  "ui": true,
+  "uiLanguage": true,
+  "extensions": [],
+  "commands": [
+    {
+      "id": "choose",
+      "label": "选择语言文件…",
+      "description": "打开选择窗口，列出扩展 lang 目录下的 .lang 文件（损坏的文件不可选）"
+    }
+  ]
+}
