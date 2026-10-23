@@ -1,0 +1,4 @@
+*.log
+*.xtxs
+selected.json
+node_modules/
