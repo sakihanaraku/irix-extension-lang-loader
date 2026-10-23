@@ -1,0 +1,10 @@
+{
+  "name": "irix-extension-lang-loader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Language extension for iRix Audio Player (ext-v2x)",
+  "scripts": {
+    "test": "node self-test.mjs"
+  },
+  "license": "MIT"
+}
