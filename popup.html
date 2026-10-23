@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iRix Language</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 18px; min-height: 100vh;
+    font: 13px/1.5 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    background: #121820; color: #e7edf5;
+  }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  .hint { color: #97a6b8; font-size: 12px; margin: 0 0 14px; }
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  button {
+    text-align: left; width: 100%; padding: 10px 12px; border-radius: 9px;
+    border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06);
+    color: inherit; font: inherit; cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: rgba(255,255,255,.12); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .name { font-weight: 600; }
+  .meta { color: #97a6b8; font-size: 11.5px; }
+  .bad { color: #ff8a8a; font-weight: 600; }
+  .ok { color: #35d07f; font-size: 11.5px; }
+  .foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .foot button { width: auto; padding: 6px 14px; }
+  .selected { outline: 1px solid #35d07f; }
+  @media (prefers-color-scheme: light) {
+    body { background: #f4f7fb; color: #121b25; }
+    button { border-color: rgba(18,27,37,.18); background: rgba(18,27,37,.05); }
+    button:hover:not(:disabled) { background: rgba(18,27,37,.10); }
+    .hint, .meta { color: #55677a; }
+  }
+</style>
+</head>
+<body>
+  <h1 id="title">选择语言文件 / Choose language</h1>
+  <p class="hint" id="hint">读取扩展的 lang/*.lang；格式不对的文件会显示为「损坏的文件」。</p>
+  <div class="list" id="list"></div>
+  <div class="foot"><button id="close" type="button">关闭</button></div>
+  <script>
+    const listEl = document.getElementById('list');
+    let ui = {
+      title: '选择语言文件', hint: '读取扩展的 lang/*.lang；格式不对的文件会显示为「损坏的文件」。',
+      close: '关闭', current: '当前', noFiles: 'lang 目录里没有 .lang 文件',
+    };
+    async function initUi() {
+      try {
+        const got = await window.langPicker.ui();
+        if (got && typeof got === 'object') ui = { ...ui, ...got };
+      } catch {}
+      document.getElementById('title').textContent = ui.title;
+      document.getElementById('hint').textContent = ui.hint;
+      document.getElementById('close').textContent = ui.close;
+      document.title = ui.title;
+    }
+    async function load() {
+      const items = await window.langPicker.list();
+      listEl.textContent = '';
+      if (!items.length) {
+        const p = document.createElement('p');
+        p.className = 'hint';
+        p.textContent = ui.noFiles;
+        listEl.appendChild(p);
+        return;
+      }
+      for (const item of items) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.disabled = !item.valid;
+        if (item.selected) btn.classList.add('selected');
+        const row = document.createElement('div');
+        row.className = 'row';
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = item.valid ? item.name : item.file;
+        const meta = document.createElement('span');
+        meta.className = item.valid ? 'meta' : 'bad';
+        meta.textContent = item.valid ? item.code : '损坏的文件';
+        row.append(name, meta);
+        const file = document.createElement('div');
+        file.className = 'meta';
+        file.textContent = item.file + (item.selected ? ' · ' + ui.current : '');
+        btn.append(row, file);
+        if (item.valid) {
+          btn.addEventListener('click', async () => {
+            const r = await window.langPicker.pick(item.file);
+            if (!r.ok) {
+              meta.textContent = r.error || '损坏的文件';
+              meta.className = 'bad';
+              btn.disabled = true;
+            }
+          });
+        }
+        listEl.appendChild(btn);
+      }
+    }
+    initUi().then(load).catch(() => {});
+    document.getElementById('close').addEventListener('click', () => window.langPicker.close());
+  </script>
+</body>
+</html>
