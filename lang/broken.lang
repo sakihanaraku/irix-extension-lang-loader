@@ -1,5 +1,0 @@
-# 故意写坏的文件，用于选择窗口的「损坏的文件」测试
-@format=not-irix-lang
-@code=xx
-@name=Broken
-tip.settings=This should never apply
